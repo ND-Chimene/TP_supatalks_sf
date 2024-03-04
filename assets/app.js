@@ -1,6 +1,6 @@
 // Import javascript
 import './bootstrap.js';
-import './bootstrap.bundle.min.js';
+import './js/bootstrap.bundle.min.js';
 
 // Import styles
 import './styles/app.css';
