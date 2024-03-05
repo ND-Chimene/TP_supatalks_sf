@@ -54,15 +54,15 @@ class AppFixtures extends Fixture
         ];
 
         // Boucle pour créer 20 événements
-        foreach ($events as $item) {
+        for ($i=0; $i < count($events); $i++) { 
             $event = new Event();
-            $event->setName($item)
+            $event->setName($events[$i])
                 ->setTheme('Web development')
                 ->setDate($faker->dateTimeBetween('-6 months', '+6 months'))
                 ->setLocation($faker->city)
                 ->setAttendee($faker->numberBetween(10, 100))
                 ->setPrice($faker->numberBetween(0, 250))
-                ->addSpeaker($speakerArray[$faker->numberBetween(0, 39)])
+                ->addSpeaker($speakerArray[$i])
                 ;
             $manager->persist($event);
         }
