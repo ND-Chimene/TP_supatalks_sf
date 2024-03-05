@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-use DateTime;
 use Faker\Factory;
 use App\Entity\Event;
 use App\Entity\Speaker;
