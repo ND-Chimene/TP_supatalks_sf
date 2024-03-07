@@ -148,4 +148,10 @@ class Event
 
         return $this;
     }
+    
+    // Conversion de l'objet en chaîne de caractères
+    public function __toString(): string
+    {
+        return $this->name;
+    }
 }

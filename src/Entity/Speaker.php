@@ -123,8 +123,15 @@ class Speaker
         return $this;
     }
 
+    // Concatenation du prénom et du nom
     public function fullName(): string
     {
         return $this->getFirstname() . ' ' . $this->getLastname();
+    }
+
+    // Conversion de l'objet en chaîne de caractères
+    public function __toString(): string
+    {
+        return $this->firstname;
     }
 }

@@ -250,3 +250,82 @@ Une fois fait, afin d'afficher l'entité dans le dashboard, on modifie le "Dashb
         yield MenuItem::linkToCrud('Events', 'fas fa-list', Event::class);
     // ...
 ```
+
+### Personnalisation de l'inteface d'EasyAdmin
+### Personnalisation des formulaires
+
+## Mise en place d'un système d'utilisateur
+
+Pour mettre en place un système d'utilisateur, on tout d'abord créé un entité `User` avec la commande suivante :
+
+```bash
+symfony console make:user
+```
+
+Note importante, il ne faut jamais créer une entité d'utilisateur autrement, si on souhaite mettre à jour l'entité `User` il faut utiliser la commande habituelle `symfony console make:entity User` et ajouter les propriétés que l'on souhaite.
+
+## Mise en place d'un système d'authentification
+
+Tout comme plusieurs outils dans un projet symfony, le CLI nous facilite l'expérience de développement avec des commandes dédiées. Pour mettre en place un système d'authentification, on utilise la commande suivante :
+
+```bash
+symfony console make:auth
+```
+
+On répond aux questions posées par la commande et on se retrouve avec un système d'authentification complet. Pour y accéder, on se rend sur la route `/login`. On y trouvera un formulaire de connexion complet.
+
+Les fichier créés par la commande sont :
+
+- `src/Security/AppAuthenticator.php`
+- `src/Controller/SecurityController.php`
+- `templates/security/login.html.twig`
+
+Notez que la nomination des fichiers peut varier en fonction des réponses que vous avez donné lors de la création du système d'authentification. Exemple : `AppAuthenticator` peut être `UserAuthenticator`.
+
+### Créer un utilisateur Admin
+
+Dans le cas de Supatalks, il s'agit d'une application métier, ce qui signifie que la possibilité de créer n'est pas ouverte au public. On a donc besoin de créer un utilisateur admin. Pour cela, on dois hasher le mot de passe de l'utilisateur admin. On utilise la commande suivante :
+
+```bash
+symfony console security:hash-password
+```
+
+Attention, lors de la création du mot de passe hasher, le terminal n'affichera pas le mot de passe en clair. Il faudra ensuite le copier et le coller le "Password hash" dans le fichier `src/DataFixtures/AppFixtures.php` :
+
+```php
+    // Création d'un utilisateur admin
+        $user = new User();
+        $user->setEmail('admin@admin.fr')
+            ->setPassword('$2y$13$NJpGg/WaTYG0ONkZkf6tvuPVmkuexwRQqozQKsp5b8yc9z9B3ziMG') // admin
+            ->setRoles(['ROLE_ADMIN'])
+            ;
+        $manager->persist($user);
+```
+
+Désormais, vous pouvez lancer la commande `symfony console doctrine:fixtures:load` pour mettre à jour la base de données avec l'utilisateur admin. Puis vous pouvez vous connecter avec les identifiants renseignés.
+
+Lors de votre première connexion, il se peut que vous rencontriez une erreur dûe au faite que la route de redirection n'ai pas été configuré dans le fichier `src/Security/AppAuthenticator.php`. Rendez-vous dans le fichier à la méthode `onAuthenticationSuccess()` et ajoutez la route de redirection :
+
+```php
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+    {
+        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+            return new RedirectResponse($targetPath);
+        }
+
+        // For example:
+        return new RedirectResponse($this->urlGenerator->generate('admin'));
+        // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+    }
+```
+
+### Limiter l'accès à certaines pages
+
+Afin de limiter l'accès à certaine de l'application pour un type d'utilisateur spécifique, on utilise les paramètres du fichier `security.yaml`. Dans la zone "access_control", on ajoute les routes que l'on souhaite protéger avec le rôle qui est autorisé à y accéder :
+
+```yaml
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
+```
+
+Désormais, seuls les utilisateurs avec le rôle `ROLE_ADMIN` pourront accéder à la route `/admin`. Dans le cas où un utilisateur anonyme tente d'accéder à cette route, il sera redirigé vers la route `/login`. Concernant un utilisateur authentifié mais n'ayant pas le rôle `ROLE_ADMIN`, il tombera sur une route 403 (Forbidden).

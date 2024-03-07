@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use Faker\Factory;
 use App\Entity\Event;
 use App\Entity\Speaker;
+use App\Entity\User;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 
@@ -14,7 +15,21 @@ class AppFixtures extends Fixture
     {
         $faker = Factory::create('fr_FR'); // Initialisation de Faker
 
+        // Création d'un utilisateur admin
+        $user = new User();
+        $user->setEmail('admin@admin.fr')
+            ->setPassword('$2y$13$NJpGg/WaTYG0ONkZkf6tvuPVmkuexwRQqozQKsp5b8yc9z9B3ziMG') // admin
+            ->setRoles(['ROLE_ADMIN'])
+            ;
+        $manager->persist($user);
+
         // Création de 40 speakers
+        $speakerImages = [
+            'user1.jpg',
+            'user2.jpg',
+            'user3.jpg',
+            'user4.jpg',
+        ];
         $speakerArray = [];
         for ($i=1; $i < 41; $i++) { 
             $speaker = new Speaker();
@@ -23,7 +38,7 @@ class AppFixtures extends Fixture
                 ->setJob($faker->jobTitle)
                 ->setCompany($faker->company)
                 ->setExperience($faker->numberBetween(1, 20))
-                ->setImage('https://randomuser.me/api/portraits/men/'. $i .'.jpg')
+                ->setImage($faker->randomElement($speakerImages))
                 ;
                 array_push($speakerArray, $speaker);
                 $manager->persist($speaker);
