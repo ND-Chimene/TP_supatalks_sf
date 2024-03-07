@@ -31,11 +31,17 @@ class Event
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
-    #[ORM\OneToMany(targetEntity: Speaker::class, mappedBy: 'event')]
-    private Collection $speakers;
-
     #[ORM\Column(nullable: true)]
     private ?int $attendee = null;
+
+    #[ORM\ManyToMany(targetEntity: Speaker::class, mappedBy: 'events')]
+    private Collection $speakers;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $cover = null;
+
+    #[ORM\Column]
+    private ?bool $isPublished = false;
 
     public function __construct()
     {
@@ -107,36 +113,6 @@ class Event
         return $this;
     }
 
-    /**
-     * @return Collection<int, Speaker>
-     */
-    public function getSpeakers(): Collection
-    {
-        return $this->speakers;
-    }
-
-    public function addSpeaker(Speaker $speaker): static
-    {
-        if (!$this->speakers->contains($speaker)) {
-            $this->speakers->add($speaker);
-            $speaker->setEvent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSpeaker(Speaker $speaker): static
-    {
-        if ($this->speakers->removeElement($speaker)) {
-            // set the owning side to null (unless already changed)
-            if ($speaker->getEvent() === $this) {
-                $speaker->setEvent(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getAttendee(): ?int
     {
         return $this->attendee;
@@ -154,4 +130,56 @@ class Event
     {
         return $this->name;
     }
-}
+
+    /**
+     * @return Collection<int, Speaker>
+     */
+    public function getSpeakers(): Collection
+    {
+        return $this->speakers;
+    }
+
+    public function addSpeaker(Speaker $speaker): static
+    {
+        if (!$this->speakers->contains($speaker)) {
+            $this->speakers->add($speaker);
+            $speaker->addEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSpeaker(Speaker $speaker): static
+    {
+        if ($this->speakers->removeElement($speaker)) {
+            $speaker->removeEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function getCover(): ?string
+    {
+        return $this->cover;
+    }
+
+    public function setCover(?string $cover): static
+    {
+        $this->cover = $cover;
+
+        return $this;
+    }
+
+    public function isIsPublished(): ?bool
+    {
+        return $this->isPublished;
+    }
+
+    public function setIsPublished(bool $isPublished): static
+    {
+        $this->isPublished = $isPublished;
+
+        return $this;
+    }
+
+} // Do not write anything after this line

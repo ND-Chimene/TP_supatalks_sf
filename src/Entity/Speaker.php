@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SpeakerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SpeakerRepository::class)]
@@ -29,10 +31,15 @@ class Speaker
     private ?int $experience = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $image = null;
+    private ?string $image = 'default.png';
 
-    #[ORM\ManyToOne(inversedBy: 'speakers')]
-    private ?Event $event = null;
+    #[ORM\ManyToMany(targetEntity: Event::class, inversedBy: 'speakers')]
+    private Collection $events;
+
+    public function __construct()
+    {
+        $this->events = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -111,18 +118,6 @@ class Speaker
         return $this;
     }
 
-    public function getEvent(): ?Event
-    {
-        return $this->event;
-    }
-
-    public function setEvent(?Event $event): static
-    {
-        $this->event = $event;
-
-        return $this;
-    }
-
     // Concatenation du prénom et du nom
     public function fullName(): string
     {
@@ -134,4 +129,28 @@ class Speaker
     {
         return $this->firstname;
     }
-}
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): static
+    {
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): static
+    {
+        $this->events->removeElement($event);
+
+        return $this;
+    }
+} // Do not write anything after this line
