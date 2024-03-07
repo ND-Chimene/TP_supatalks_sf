@@ -4,21 +4,46 @@ namespace App\Controller\Admin;
 
 use App\Entity\Event;
 use App\Entity\Speaker;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
-use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use App\Repository\EventRepository;
+use App\Repository\SpeakerRepository;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 class DashboardController extends AbstractDashboardController
 {
+    // Declaratiton of repositories
+    private EventRepository $eventRepository;
+    private SpeakerRepository $speakerRepository;
+
+    // Constructor
+    public function __construct(
+        EventRepository $eventRepository,
+        SpeakerRepository $speakerRepository
+    ) {
+        $this->eventRepository = $eventRepository;
+        $this->speakerRepository = $speakerRepository;
+    }
+
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-        // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-        //
-        return $this->render('admin/dashboard.html.twig');
+        $events = $this->eventRepository->findAll(); // All events
+        $speakers = $this->speakerRepository->findAll(); // All speakers
+        $pastEvents = [];
+        foreach ($events as $evt) {
+            if ($evt->getDate() < new \DateTime()) {
+                array_push($pastEvents, $evt);
+            }
+        } // Past events
+        return $this->render('admin/dashboard.html.twig', [
+            'events' => $events,
+            'speakers' => $speakers,
+            'pastEvents' => $pastEvents,
+        ]);
     }
 
     public function configureDashboard(): Dashboard
@@ -33,6 +58,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Events', 'fas fa-list', Event::class);
         yield MenuItem::linkToCrud('Speakers', 'fas fa-bullhorn', Speaker::class);
         yield MenuItem::linkToRoute('Back to website', 'fa fa-arrow-left', 'app_home');
+
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }
 }
