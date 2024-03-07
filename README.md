@@ -319,11 +319,13 @@ Lors de votre première connexion, il se peut que vous rencontriez une erreur d�
     }
 ```
 
+### Limiter l'accès à certaines pages
 
+Afin de limiter l'accès à certaine de l'application pour un type d'utilisateur spécifique, on utilise les paramètres du fichier `security.yaml`. Dans la zone "access_control", on ajoute les routes que l'on souhaite protéger avec le rôle qui est autorisé à y accéder :
 
-
-
-
-```php
-    
+```yaml
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
 ```
+
+Désormais, seuls les utilisateurs avec le rôle `ROLE_ADMIN` pourront accéder à la route `/admin`. Dans le cas où un utilisateur anonyme tente d'accéder à cette route, il sera redirigé vers la route `/login`. Concernant un utilisateur authentifié mais n'ayant pas le rôle `ROLE_ADMIN`, il tombera sur une route 403 (Forbidden).
