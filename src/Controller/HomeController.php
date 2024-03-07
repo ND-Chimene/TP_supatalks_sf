@@ -16,6 +16,7 @@ class HomeController extends AbstractController
         SpeakerRepository $speakerRepository
     ): Response
     {
+        $test = 'test';
         return $this->render('home/index.html.twig', [
             'title' => 'Supatalks',
             'events' => $eventRepository->findAll(),
