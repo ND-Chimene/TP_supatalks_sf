@@ -55,14 +55,15 @@ class EventCrudController extends AbstractCrudController
                 ->setHelp('Set the price of the event'),
             AssociationField::new('speakers')->hideOnIndex()
                 ->setLabel('📢 Speakers')
-                ->setHelp('Who will be speaking at the event?'),
+                ->setHelp('Who will be speaking at the event?')
+                ->setFormTypeOption('choice_label', 'firstname'),
             DateTimeField::new('date')
                 ->setLabel('📅 Date')
-                ->setFormat('dd-MM-yyyy')
+                ->setFormat('dd/MM/yyyy')
                 ->setHelp('When the event will happen?'),
             IntegerField::new('attendee')->hideOnIndex()
                 ->setLabel('👥 Attendee')
                 ->setHelp('How many people are attending?'),
         ];
     }
-}
+} // Do not write anything after this line

@@ -61,4 +61,4 @@ class DashboardController extends AbstractDashboardController
 
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }
-}
+} // Do not write anything after this line
