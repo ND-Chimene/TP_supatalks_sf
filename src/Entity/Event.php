@@ -43,9 +43,13 @@ class Event
     #[ORM\Column]
     private ?bool $isPublished = false;
 
+    #[ORM\OneToMany(targetEntity: Speaker::class, mappedBy: 'event')]
+    private Collection $speaker;
+
     public function __construct()
     {
         $this->speakers = new ArrayCollection();
+        $this->speaker = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -124,7 +128,7 @@ class Event
 
         return $this;
     }
-    
+
     // Conversion de l'objet en chaîne de caractères
     public function __toString(): string
     {
@@ -180,6 +184,14 @@ class Event
         $this->isPublished = $isPublished;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Speaker>
+     */
+    public function getSpeaker(): Collection
+    {
+        return $this->speaker;
     }
 
 } // Do not write anything after this line

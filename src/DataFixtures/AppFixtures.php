@@ -21,6 +21,7 @@ class AppFixtures extends Fixture
             ->setPassword('$2y$13$NJpGg/WaTYG0ONkZkf6tvuPVmkuexwRQqozQKsp5b8yc9z9B3ziMG') // admin
             ->setRoles(['ROLE_ADMIN'])
             ;
+        $this->addReference('user_admin', $user);
         $manager->persist($user);
 
         // Création de 40 speakers
@@ -31,7 +32,7 @@ class AppFixtures extends Fixture
             'user4.jpg',
         ];
         $speakerArray = [];
-        for ($i=1; $i < 41; $i++) { 
+        for ($i=1; $i < 41; $i++) {
             $speaker = new Speaker();
             $speaker->setFirstname($faker->firstName)
                 ->setLastname($faker->lastName)
@@ -69,7 +70,7 @@ class AppFixtures extends Fixture
         ];
 
         // Boucle pour créer 20 événements
-        for ($i=0; $i < count($events); $i++) { 
+        for ($i=0; $i < count($events); $i++) {
             $event = new Event();
             $event->setName($events[$i])
                 ->setTheme('Web development')
@@ -81,7 +82,15 @@ class AppFixtures extends Fixture
                 ;
             $manager->persist($event);
         }
-        
+
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            UserFixtures::class,
+            PostFixtures::class
+        ];
     }
 }

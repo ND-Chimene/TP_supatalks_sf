@@ -36,6 +36,9 @@ class Speaker
     #[ORM\ManyToMany(targetEntity: Event::class, inversedBy: 'speakers')]
     private Collection $events;
 
+    #[ORM\ManyToOne(inversedBy: 'speaker')]
+    private ?Event $event = null;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -150,6 +153,18 @@ class Speaker
     public function removeEvent(Event $event): static
     {
         $this->events->removeElement($event);
+
+        return $this;
+    }
+
+    public function getEvent(): ?Event
+    {
+        return $this->event;
+    }
+
+    public function setEvent(?Event $event): static
+    {
+        $this->event = $event;
 
         return $this;
     }
