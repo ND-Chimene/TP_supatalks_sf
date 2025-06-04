@@ -27,7 +27,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/post/{ref}', name: 'app_post', methods: ['GET']),]
+    #[Route('/post/{ref}', name: 'app_post', methods: ['GET'])]
     public function show(PostRepository $pr, string $ref): Response
     {
         $post = $pr->findOneBy(['ref' => $ref]);
@@ -36,16 +36,4 @@ class PostController extends AbstractController
             "title" => $post->getTitle(),
         ]);
     }
-
-
-    // #[Route('/trip/{ref}', name: 'app_trip', methods: ['GET'])]
-    // public function show(TripRepository $tr, string $ref): Response
-    // {
-    //     $trip = $tr->findOneBy(['ref' => $ref]);
-    //     return $this->render('trip/show.html.twig', [
-    //         'trip' => $trip,
-    //         'title' => $trip->getTitle(),
-    //         'descrition' => $trip->getDescription(),
-    //     ]);
-    // }
 }
