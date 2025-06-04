@@ -32,6 +32,12 @@ class Post
     #[ORM\Column(length: 255)]
     private ?string $ref = null;
 
+    public function __construct()
+    {
+        $this->isPublished = false;
+        $this->ref = uniqid();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
