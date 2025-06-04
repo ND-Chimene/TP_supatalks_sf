@@ -89,7 +89,6 @@ class AppFixtures extends Fixture
     public function getDependencies(): array
     {
         return [
-            UserFixtures::class,
             PostFixtures::class
         ];
     }
